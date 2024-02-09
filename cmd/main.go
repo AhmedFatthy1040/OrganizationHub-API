@@ -10,6 +10,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
+	"github.com/AhmedFatthy1040/OrganizationHub-API/pkg/api/handlers"
+	"github.com/AhmedFatthy1040/OrganizationHub-API/pkg/api/middleware"
 	"github.com/AhmedFatthy1040/OrganizationHub-API/pkg/api/routes"
 	"github.com/AhmedFatthy1040/OrganizationHub-API/pkg/database/mongodb/repository"
 )
@@ -69,11 +71,18 @@ func main() {
     // Initialize Gin router
 	router := gin.Default()
 
-	// Initialize user repository
+	// Initialize repositories
     userRepository := repository.NewUserRepository(database)
+	organizationRepository := repository.NewOrganizationRepository(database)
 
-    // Setup user routes
+	organizationHandler := handlers.NewOrganizationHandler(organizationRepository)
+
+	// Setup middleware
+    router.Use(middleware.BearerTokenAuth(userRepository, organizationRepository))
+
+    // Setup routes
     routes.SetupUserRoutes(router, userRepository)
+	routes.SetupOrganizationRoutes(router, organizationHandler)
 
 	// Start the Gin server
 	router.Run(":8080")
