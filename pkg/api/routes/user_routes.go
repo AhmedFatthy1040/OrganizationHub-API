@@ -15,5 +15,6 @@ func SetupUserRoutes(router *gin.Engine, userRepository *repository.UserReposito
     {
         userRoutes.POST("/signup", userHandler.Signup)
         userRoutes.POST("/signin", userHandler.Signin)
+        userRoutes.POST("/refresh-token", userHandler.RefreshToken)
     }
 }
